@@ -8,6 +8,26 @@ import (
 	"github.com/sendgrid/sendgrid-go"
 )
 
+//SendGridEmail structure to send an email
+type SendGridEmail struct {
+	Personalizations []struct {
+		To []struct {
+			Email string `json:"email"`
+		} `json:"to"`
+		Cc []struct {
+			Email string `json:"email"`
+		} `json:"cc"`
+		Subject string `json:"subject"`
+	} `json:"personalizations"`
+	From struct {
+		Email string `json:"email"`
+	} `json:"from"`
+	Content []struct {
+		Type  string `json:"type"`
+		Value string `json:"value"`
+	} `json:"content"`
+}
+
 //SendEmail service
 var SendEmail = func() {
 	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
