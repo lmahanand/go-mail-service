@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -28,8 +27,6 @@ var SendEmail = func(w http.ResponseWriter, r *http.Request) {
 //GetEmails method
 func GetEmails(w http.ResponseWriter, r *http.Request) {
 	emailID := r.URL.Query().Get("emailID")
-
-	fmt.Println("emailID ", emailID)
 
 	emails := emailService.GetEmails(emailID)
 	w.Header().Add("Content-Type", "application/json")

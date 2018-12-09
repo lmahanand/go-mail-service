@@ -30,8 +30,8 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 		Subject:       emailDTO.Subject,
 		TextBody:      emailDTO.Body,
 		HTMLBody:      emailDTO.Body,
-		Status:        "SCHEDULED",
-		ScheduledTime: "string",
+		Status:        m.SCHEDULED,
+		ScheduledTime: emailDTO.ScheduledTime,
 	}
 	emails := Emails[emailID]
 
@@ -39,7 +39,7 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 
 	Emails[emailID] = emails
 
-	resp := u.Message(true, "Scheduled")
+	resp := u.Message(true, m.SCHEDULED)
 	return resp
 }
 
