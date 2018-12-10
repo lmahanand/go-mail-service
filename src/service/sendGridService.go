@@ -97,7 +97,6 @@ var SendEmailUsingSendGridServer = func(email m.Email) (int, error) {
 	response, err := sendgrid.API(request)
 	if err != nil {
 		log.Println(err)
-		log.Printf("response.StatusCode %v \n", response.StatusCode)
 		return response.StatusCode, err
 	}
 

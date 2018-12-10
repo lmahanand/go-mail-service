@@ -51,7 +51,7 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 	isEmailSentUsingSendGrid := true
 
 	res, err := SendEmailUsingSendGridServer(email)
-	println("err ", err)
+
 	if err != nil || res == 400 {
 		log.Printf("Could not use Send Grid server hence using Amazon Email Service %v", err)
 		isEmailSentUsingSendGrid = false
