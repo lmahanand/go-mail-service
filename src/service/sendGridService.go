@@ -11,42 +11,6 @@ import (
 )
 
 //SendGridEmail ...
-/*
-	JSON format of SendGridEmail
-	{
-  		"personalizations": [
-		{
-		"to": [
-			{
-			"email": "<EMAIL_ID>"
-			},
-			{
-			"email": "<EMAIL_ID>"
-			}
-		],
-		"cc": [
-			{
-			"email": "<EMAIL_ID>"
-			},
-			{
-			"email": "<EMAIL_ID>"
-			}
-		],
-		"bcc": [],
-		"subject": "Assignment Testing mail with CC"
-		}
-		],
-		"from": {
-			"email": "<EMAIL_ID>"
-		},
-		"content": [
-			{
-			"type": "text/plain",
-			"value": "and easy to do anywhere, even with Go"
-			}
-		]
-	}
-*/
 type SendGridEmail struct {
 	Personalizations []Personalization `json:"personalizations"`
 	From             From              `json:"from"`
