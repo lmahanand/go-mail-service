@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	m "../model"
 	sendgrid "github.com/sendgrid/sendgrid-go"
 )
 
@@ -86,29 +87,34 @@ type Content struct {
 }
 
 //SendEmail service
-var SendEmail = func() {
-	from := From{Email: "lmahanand@gmail.com"}
-	to := [...]To{
-		{Email: "lmahanand2010@gmail.com"},
+var SendEmail = func(email m.Email) {
+	from := From{Email: email.From}
+
+	lenOfTo := len(email.To)
+	to := make([]To, lenOfTo)
+	for i, t := range email.To {
+		to[i] = To{Email: t}
 	}
 
-	ccc := [...]Cc{
-		{Email: "raj.solidity@gmail.com"},
+	lenOfCc := len(email.Cc)
+	cc := make([]Cc, lenOfCc)
+	for i, c := range email.Cc {
+		cc[i] = Cc{Email: c}
 	}
 
-	subject := "Assignment Testing mail with CC"
+	subject := email.Subject
 
-	content := [...]Content{
-		{
-			Type:  "text/plain",
-			Value: "and easy to do anywhere, even with Go",
-		},
+	lenOfContent := len(email.Content)
+	content := make([]Content, lenOfContent)
+
+	for i, c := range email.Content {
+		content[i] = Content{Type: c.Type, Value: c.Value}
 	}
 
 	personalizations := []Personalization{
 		Personalization{
 			To:      to[:],
-			Cc:      ccc[:],
+			Cc:      cc[:],
 			Subject: subject,
 		},
 	}
@@ -118,12 +124,8 @@ var SendEmail = func() {
 		From:             from,
 		Content:          content[:],
 	}
-
-	b, _ := json.MarshalIndent(sge, "", "")
-
+	b, _ := json.Marshal(sge)
 	s := string(b)
-	fmt.Println("\n", s)
-	fmt.Printf("\n")
 
 	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
 	request.Method = "POST"

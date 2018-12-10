@@ -1,5 +1,11 @@
 package model
 
+//Content ...
+type Content struct {
+	Type  string `json:"type"`
+	Value string `json:"value"`
+}
+
 // Email Model Structure
 type Email struct {
 	From          string
@@ -7,8 +13,7 @@ type Email struct {
 	Cc            []string
 	Bcc           []string
 	Subject       string
-	TextBody      string
-	HTMLBody      string
+	Content       []Content
 	Status        string
 	ScheduledTime string
 }

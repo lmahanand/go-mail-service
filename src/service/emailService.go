@@ -13,6 +13,8 @@ type EmailService struct{}
 //Emails Repository against each email id
 var Emails = repo.Emails
 
+var isSendGridActive = true
+
 //SendEmail service
 func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]interface{} {
 
@@ -21,6 +23,12 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 	}
 
 	emailID := emailDTO.From
+	lenOfContent := len(emailDTO.Content)
+	content := make([]m.Content, lenOfContent)
+
+	for i, c := range emailDTO.Content {
+		content[i] = m.Content{Type: c.Type, Value: c.Value}
+	}
 
 	email := m.Email{
 		From:          emailID,
@@ -28,8 +36,7 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 		Cc:            emailDTO.Cc,
 		Bcc:           emailDTO.Bcc,
 		Subject:       emailDTO.Subject,
-		TextBody:      emailDTO.Body,
-		HTMLBody:      emailDTO.Body,
+		Content:       content[:],
 		Status:        m.SCHEDULED,
 		ScheduledTime: emailDTO.ScheduledTime,
 	}
@@ -38,6 +45,8 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 	emails = append(emails, email)
 
 	Emails[emailID] = emails
+
+	SendEmail(email)
 
 	resp := u.Message(true, m.SCHEDULED)
 	return resp
@@ -59,10 +68,6 @@ func (emailService *EmailService) Validate(emailDTO dto.EmailDTO) (map[string]in
 
 	if len(emailDTO.To) == 0 {
 		return u.Message(false, "Recepient email id is empty in the payload"), false
-	}
-
-	if emailDTO.Body == "" {
-		return u.Message(false, "Email Body is empty in the payload"), false
 	}
 
 	//All the required parameters are present
