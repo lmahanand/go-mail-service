@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	//sendGrid.SendEmail()
 	router := mux.NewRouter()
 	router.HandleFunc("/email/list", ctrl.GetEmails).Methods("GET")
 	router.HandleFunc("/email", ctrl.SendEmail).Methods("POST")

@@ -51,7 +51,7 @@ type Content struct {
 }
 
 //SendEmail service
-var SendEmailUsingSendGridServer = func(email m.Email) {
+var SendEmailUsingSendGridServer = func(email m.Email) (int, error) {
 	from := From{Email: email.From}
 
 	lenOfTo := len(email.To)
@@ -103,4 +103,6 @@ var SendEmailUsingSendGridServer = func(email m.Email) {
 		fmt.Println(response.Body)
 		fmt.Println(response.Headers)
 	}
+
+	return response.StatusCode, err
 }

@@ -12,7 +12,7 @@ import (
 const (
 	// Replace sender@example.com with your "From" address.
 	// This address must be verified with Amazon SES.
-	Sender = "lmahanand@example.com"
+	Sender = "lmahanand@gmail.com"
 
 	// Replace recipient@example.com with a "To" address. If your account
 	// is still in the sandbox, this address must be verified.
@@ -37,7 +37,7 @@ const (
 	CharSet = "UTF-8"
 )
 
-var SendEmailUsingAmazonSES = func() {
+var SendEmailUsingAmazonSES = func() (*string, error) {
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-east-1")},
 	)
@@ -96,9 +96,10 @@ var SendEmailUsingAmazonSES = func() {
 			fmt.Println(err.Error())
 		}
 
-		return
+		return result.MessageId, err
 	}
 
 	fmt.Println("Email Sent to address: " + Recipient)
 	fmt.Println(result)
+	return result.MessageId, err
 }
