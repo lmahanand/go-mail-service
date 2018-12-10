@@ -45,14 +45,14 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 
 	resp := u.Message(true, m.SCHEDULED)
 
-	isEmailSentUsingSendGrid := true
+	isEmailToBeSentUsingSendGrid := true
 
-	if isEmailSentUsingSendGrid {
+	if isEmailToBeSentUsingSendGrid {
 		res, err := SendEmailUsingSendGridServer(email)
 
 		if err != nil || res == 400 {
 			log.Printf("Could not use Send Grid server hence using Amazon Email Service %v", err)
-			isEmailSentUsingSendGrid = false
+			isEmailToBeSentUsingSendGrid = false
 		}
 
 		if res == 202 {
@@ -62,7 +62,7 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 	}
 
 	// Send email using Amazon SES if Send Grid has failed to deliver
-	if !isEmailSentUsingSendGrid {
+	if !isEmailToBeSentUsingSendGrid {
 		awsRes, awsErr := SendEmailUsingAmazonSES(email)
 		if awsErr != nil {
 			resp = u.Message(true, m.FAILED)
