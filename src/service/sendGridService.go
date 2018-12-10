@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 
@@ -52,7 +51,7 @@ type Content struct {
 
 //SendEmail service
 var SendEmailUsingSendGridServer = func(email m.Email) (int, error) {
-	from := From{Email: email.From}
+	from := From{Email: Sender}
 
 	lenOfTo := len(email.To)
 	to := make([]To, lenOfTo)
@@ -79,7 +78,7 @@ var SendEmailUsingSendGridServer = func(email m.Email) (int, error) {
 		Personalization{
 			To:      to[:],
 			Cc:      cc[:],
-			Subject: subject,
+			Subject: subject + " : Using Send GRID",
 		},
 	}
 
@@ -98,10 +97,8 @@ var SendEmailUsingSendGridServer = func(email m.Email) (int, error) {
 	response, err := sendgrid.API(request)
 	if err != nil {
 		log.Println(err)
-	} else {
-		fmt.Println(response.StatusCode)
-		fmt.Println(response.Body)
-		fmt.Println(response.Headers)
+		log.Printf("response.StatusCode %v \n", response.StatusCode)
+		return response.StatusCode, err
 	}
 
 	return response.StatusCode, err

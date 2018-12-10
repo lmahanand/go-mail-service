@@ -1,6 +1,8 @@
 package service
 
 import (
+	"log"
+
 	dto "../dto"
 	m "../model"
 	repo "../repository"
@@ -46,10 +48,34 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 
 	Emails[emailID] = emails
 
-	SendEmailUsingSendGridServer(email)
+	isEmailSentUsingSendGrid := true
+
+	res, err := SendEmailUsingSendGridServer(email)
+	println("err ", err)
+	if err != nil || res == 400 {
+		log.Printf("Could not use Send Grid server hence using Amazon Email Service %v", err)
+		isEmailSentUsingSendGrid = false
+	}
+
+	// Send email using Amazon SES if Send Grid has failed to deliver
+	if !isEmailSentUsingSendGrid {
+		awsRes, awsErr := SendEmailUsingAmazonSES(email)
+		if awsErr != nil {
+			resp := u.Message(true, m.FAILED)
+			return resp
+		} else if awsRes != nil {
+			resp := u.Message(true, m.SENT)
+			return resp
+		}
+	}
+	if res == 202 {
+		resp := u.Message(true, m.SENT)
+		return resp
+	}
 
 	resp := u.Message(true, m.SCHEDULED)
 	return resp
+
 }
 
 //GetEmails service method

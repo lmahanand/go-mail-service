@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 
+	m "../model"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -10,34 +11,16 @@ import (
 )
 
 const (
-	// Replace sender@example.com with your "From" address.
-	// This address must be verified with Amazon SES.
+	//Sender : This address must be verified with Amazon SES.
 	Sender = "lmahanand@gmail.com"
 
-	// Replace recipient@example.com with a "To" address. If your account
-	// is still in the sandbox, this address must be verified.
-	Recipient = "raj.solidity@gmail.com"
-
-	// Specify a configuration set. To use a configuration
-	// set, comment the next line and line 92.
-	//ConfigurationSet = "ConfigSet"
-
-	// The subject line for the email.
-	Subject = "Amazon SES Test (AWS SDK for Go)"
-
-	// The HTML body for the email.
-	HtmlBody = "<h1>Amazon SES Test Email (AWS SDK for Go)</h1><p>This email was sent with " +
-		"<a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the " +
-		"<a href='https://aws.amazon.com/sdk-for-go/'>AWS SDK for Go</a>.</p>"
-
-	//The email body for recipients with non-HTML email clients.
-	TextBody = "This email was sent with Amazon SES using the AWS SDK for Go."
-
+	//CharSet ...
 	// The character encoding for the email.
 	CharSet = "UTF-8"
 )
 
-var SendEmailUsingAmazonSES = func() (*string, error) {
+//SendEmailUsingAmazonSES ...
+var SendEmailUsingAmazonSES = func(email m.Email) (*string, error) {
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-east-1")},
 	)
@@ -45,19 +28,44 @@ var SendEmailUsingAmazonSES = func() (*string, error) {
 	// Create an SES session.
 	svc := ses.New(sess)
 
+	//Extraction of Model Email
+
+	lenOfTo := len(email.To)
+	to := make([]string, lenOfTo)
+
+	for i, t := range email.To {
+		to[i] = t
+	}
+
+	lenOfCc := len(email.Cc)
+	cc := make([]string, lenOfCc)
+	for i, c := range email.Cc {
+		cc[i] = c
+	}
+
+	subject := email.Subject
+	var HTMLBody, TextBody string
+	for _, con := range email.Content {
+		if con.Type == "text/html" {
+			HTMLBody = con.Value
+		} else if con.Type == "text/plain" {
+			TextBody = con.Value
+		}
+	}
+
 	// Assemble the email.
 	input := &ses.SendEmailInput{
 		Destination: &ses.Destination{
-			CcAddresses: []*string{},
+			CcAddresses: []*string{aws.String(cc[0])},
 			ToAddresses: []*string{
-				aws.String(Recipient),
+				aws.String(to[0]),
 			},
 		},
 		Message: &ses.Message{
 			Body: &ses.Body{
 				Html: &ses.Content{
 					Charset: aws.String(CharSet),
-					Data:    aws.String(HtmlBody),
+					Data:    aws.String(HTMLBody),
 				},
 				Text: &ses.Content{
 					Charset: aws.String(CharSet),
@@ -66,7 +74,7 @@ var SendEmailUsingAmazonSES = func() (*string, error) {
 			},
 			Subject: &ses.Content{
 				Charset: aws.String(CharSet),
-				Data:    aws.String(Subject),
+				Data:    aws.String(subject + " : Using Amazon SES"),
 			},
 		},
 		Source: aws.String(Sender),
@@ -99,7 +107,7 @@ var SendEmailUsingAmazonSES = func() (*string, error) {
 		return result.MessageId, err
 	}
 
-	fmt.Println("Email Sent to address: " + Recipient)
+	fmt.Printf("Email Sent to addresses: %v", email.To)
 	fmt.Println(result)
 	return result.MessageId, err
 }
