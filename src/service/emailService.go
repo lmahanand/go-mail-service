@@ -1,7 +1,9 @@
 package service
 
 import (
+	"fmt"
 	"log"
+	"sync"
 
 	dto "../dto"
 	m "../model"
@@ -16,6 +18,7 @@ type EmailService struct{}
 var Emails = repo.Emails
 
 var isSendGridActive = true
+var mu sync.Mutex
 
 //SendEmail service
 func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]interface{} {
@@ -78,7 +81,10 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 
 	emails = append(emails, email)
 
+	// Below code prevents race condition
+	mu.Lock()
 	Emails[emailID] = emails
+	mu.Unlock()
 	return resp
 
 }
@@ -89,6 +95,10 @@ func (emailService *EmailService) GetEmails() []m.Email {
 	emails := Emails[Sender]
 
 	return emails
+}
+
+func taskWithParams(a int, b string) {
+	fmt.Println(a, b)
 }
 
 //Validate method to validate all required fields
