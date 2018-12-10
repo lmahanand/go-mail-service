@@ -26,9 +26,7 @@ var SendEmail = func(w http.ResponseWriter, r *http.Request) {
 
 //GetEmails method
 func GetEmails(w http.ResponseWriter, r *http.Request) {
-	emailID := r.URL.Query().Get("emailID")
-
-	emails := emailService.GetEmails(emailID)
+	emails := emailService.GetEmails()
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(emails)
 }

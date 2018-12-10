@@ -24,7 +24,7 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 		return resp
 	}
 
-	emailID := emailDTO.From
+	emailID := Sender
 	lenOfContent := len(emailDTO.Content)
 	content := make([]m.Content, lenOfContent)
 
@@ -42,46 +42,51 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 		Status:        m.SCHEDULED,
 		ScheduledTime: emailDTO.ScheduledTime,
 	}
-	emails := Emails[emailID]
 
-	emails = append(emails, email)
-
-	Emails[emailID] = emails
+	resp := u.Message(true, m.SCHEDULED)
 
 	isEmailSentUsingSendGrid := true
 
-	res, err := SendEmailUsingSendGridServer(email)
+	if isEmailSentUsingSendGrid {
+		res, err := SendEmailUsingSendGridServer(email)
 
-	if err != nil || res == 400 {
-		log.Printf("Could not use Send Grid server hence using Amazon Email Service %v", err)
-		isEmailSentUsingSendGrid = false
+		if err != nil || res == 400 {
+			log.Printf("Could not use Send Grid server hence using Amazon Email Service %v", err)
+			isEmailSentUsingSendGrid = false
+		}
+
+		if res == 202 {
+			email.Status = m.SENT
+			resp = u.Message(true, m.SENT)
+		}
 	}
 
 	// Send email using Amazon SES if Send Grid has failed to deliver
 	if !isEmailSentUsingSendGrid {
 		awsRes, awsErr := SendEmailUsingAmazonSES(email)
 		if awsErr != nil {
-			resp := u.Message(true, m.FAILED)
-			return resp
+			resp = u.Message(true, m.FAILED)
+			email.Status = m.FAILED
+
 		} else if awsRes != nil {
-			resp := u.Message(true, m.SENT)
-			return resp
+			resp = u.Message(true, m.SENT)
+			email.Status = m.SENT
 		}
 	}
-	if res == 202 {
-		resp := u.Message(true, m.SENT)
-		return resp
-	}
 
-	resp := u.Message(true, m.SCHEDULED)
+	emails := Emails[emailID]
+
+	emails = append(emails, email)
+
+	Emails[emailID] = emails
 	return resp
 
 }
 
 //GetEmails service method
-func (emailService *EmailService) GetEmails(emaildID string) []m.Email {
+func (emailService *EmailService) GetEmails() []m.Email {
 
-	emails := Emails[emaildID]
+	emails := Emails[Sender]
 
 	return emails
 }
