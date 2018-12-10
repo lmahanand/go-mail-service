@@ -17,18 +17,18 @@ import (
 		{
 		"to": [
 			{
-			"email": "lmahanand2010@gmail.com"
+			"email": "<EMAIL_ID>"
 			},
 			{
-			"email": "raj.solidity@gmail.com"
+			"email": "<EMAIL_ID>"
 			}
 		],
 		"cc": [
 			{
-			"email": "lmahanand2010ccc@gmail.com"
+			"email": "<EMAIL_ID>"
 			},
 			{
-			"email": "raj.solidity@gmail.com"
+			"email": "<EMAIL_ID>"
 			}
 		],
 		"bcc": [],
@@ -36,7 +36,7 @@ import (
 		}
 		],
 		"from": {
-			"email": "lmahanand@gmail.com"
+			"email": "<EMAIL_ID>"
 		},
 		"content": [
 			{
