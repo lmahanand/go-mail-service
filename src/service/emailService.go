@@ -88,10 +88,6 @@ func (emailService *EmailService) GetEmails(emaildID string) []m.Email {
 
 //Validate method to validate all required fields
 func (emailService *EmailService) Validate(emailDTO dto.EmailDTO) (map[string]interface{}, bool) {
-	if emailDTO.From == "" {
-		return u.Message(false, "From email id is empty in the payload"), false
-	}
-
 	if len(emailDTO.To) == 0 {
 		return u.Message(false, "Recepient email id is empty in the payload"), false
 	}
