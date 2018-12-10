@@ -46,7 +46,7 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 
 	Emails[emailID] = emails
 
-	SendEmail(email)
+	SendEmailUsingSendGridServer(email)
 
 	resp := u.Message(true, m.SCHEDULED)
 	return resp

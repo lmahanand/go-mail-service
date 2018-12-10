@@ -51,7 +51,7 @@ type Content struct {
 }
 
 //SendEmail service
-var SendEmail = func(email m.Email) {
+var SendEmailUsingSendGridServer = func(email m.Email) {
 	from := From{Email: email.From}
 
 	lenOfTo := len(email.To)
