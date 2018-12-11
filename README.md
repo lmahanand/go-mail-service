@@ -1,4 +1,4 @@
-# go-mail-service
+# Email Failover Service using Send Grid and AWS SES in Golang
 
 ## Steps to run the app
 
