@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"sync"
 	"time"
 
 	ctrl "./controller"
@@ -13,8 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/robfig/cron"
 )
-
-var mu sync.Mutex
 
 //MsgScheduler ...
 type MsgScheduler struct {
