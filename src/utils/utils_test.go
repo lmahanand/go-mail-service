@@ -5,9 +5,8 @@ import (
 )
 
 func TestMessage(t *testing.T) {
-	res := Message(true, "Test Data")
 
-	if res["status"] != true && res["message"] == "Test Data" {
+	if Message(true, "Test Data")["status"] != true && Message(true, "Test Data")["message"] == "Test Data" {
 		t.Error("Expected status equal true")
 	}
 }
