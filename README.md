@@ -6,7 +6,7 @@
 
 ### For future message scheduling according to given time, library from github.com/robfig/cron is used.
 
-#### Follow the below steps to run the application locally. Assumption is that you already have an account in Send Grid and AWS SES for their email services. There have the descriptive steps that needed to be configured before this application could be used.
+#### Follow the below steps to run the application locally. Assumption is that you already have an account in Send Grid and AWS SES for their email services respectively. They have the descriptive steps that needed to be configured before this application could be used.
 
 1. clone the repository to local directory
 2. go to src folder and run the below commands
