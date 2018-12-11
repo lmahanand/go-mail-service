@@ -41,15 +41,13 @@ func main() {
 
 	c := cron.New()
 
-	//Execute every 2 seconds after a certain time (5 second from now)
+	//Execute every 30 seconds after a certain time (2 second from now)
 	now := time.Now()
-	at := now.Add(5 * time.Second) //In your case, this should be: Sep 1st, 2017
+	at := now.Add(2 * time.Second)
 	s := &MsgScheduler{at, 2 * time.Second, s.Emails, s.Sender}
 	c.Schedule(s, cron.FuncJob(
 		func() {
-			cur := time.Now()
-			fmt.Printf("  [%v] CRON job executed after %v\n", cur, cur.Sub(now))
-			fmt.Printf("Every minute number of emails %v\n", len(s.Emails[s.Sender]))
+			messageScheduler()
 		}))
 
 	fmt.Printf("Now: %v\n", now)
@@ -59,4 +57,9 @@ func main() {
 	log.Println("Server started at port 8081")
 	log.Fatal(http.ListenAndServe(":8081", router))
 
+}
+
+func messageScheduler() {
+	es := s.EmailService{}
+	es.SendScheduledEmails()
 }
