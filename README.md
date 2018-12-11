@@ -2,7 +2,7 @@
 
 ## Steps to run the app
 
-### This app accepts the required information about an email and schedules and sends emails in the future. It has also implemented a scheduler that could be set to send emails in future. It accepts the scheudling time in UTC format. E.g. 09 Dec 18 4:36 UTC
+### This app accepts the required information about an email and schedules and sends emails in the future. It has also implemented a scheduler that could be set to send emails in future. It accepts the scheudling time in UTC format. E.g. 09 Dec 18 4:36 UTC. It uses email services from SendGrid (https://sendgrid.com) and AWS SES (https://aws.amazon.com/ses/). In case one service is failed to deliver then the application failovers to another available service to deliver the emails.
 
 1. clone the repository to local directory
 2. go to src folder and run the below commands
