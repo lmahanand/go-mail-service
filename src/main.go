@@ -41,16 +41,15 @@ func main() {
 
 	c := cron.New()
 
-	//Execute every 30 seconds after a certain time (2 second from now)
+	//Execute every 10 seconds after a certain time (2 second from now)
 	now := time.Now()
 	at := now.Add(2 * time.Second)
-	s := &MsgScheduler{at, 2 * time.Second, s.Emails, s.Sender}
+	s := &MsgScheduler{at, 10 * time.Second, s.Emails, s.Sender}
 	c.Schedule(s, cron.FuncJob(
 		func() {
 			messageScheduler()
 		}))
 
-	fmt.Printf("Now: %v\n", now)
 	c.Start()
 	defer c.Stop()
 
@@ -60,6 +59,8 @@ func main() {
 }
 
 func messageScheduler() {
+	t := time.Now().UTC()
+	fmt.Printf("UTC time is %v\n", t)
 	es := s.EmailService{}
 	es.SendScheduledEmails()
 }

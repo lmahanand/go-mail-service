@@ -50,7 +50,6 @@ func (emailService *EmailService) SendEmail(emailDTO dto.EmailDTO) map[string]in
 	resp := u.Message(true, m.SCHEDULED)
 
 	//Check if email is scheduled now
-	fmt.Println("Checking if mail is scheduled now")
 	isEmailScheduledNow := verifyTime(email)
 
 	if isEmailScheduledNow {
@@ -121,12 +120,40 @@ func (emailService *EmailService) Validate(emailDTO dto.EmailDTO) (map[string]in
 //SendScheduledEmails Check if email is scheduled now
 func (emailService *EmailService) SendScheduledEmails() bool {
 	emails := Emails[Sender]
-	fmt.Printf("size of emails : %v\n", len(emails))
+
 	if len(emails) > 0 {
 
 		for i := range emails {
 			email := emails[i]
-			verifyTime(email)
+			isEmailScheduledNow := verifyTime(email)
+			if isEmailScheduledNow {
+				isEmailToBeSentUsingSendGrid := true
+
+				if isEmailToBeSentUsingSendGrid {
+					res, err := SendEmailUsingSendGridServer(email)
+
+					if err != nil || res == 400 {
+						log.Printf("Could not use Send Grid server hence using Amazon Email Service %v", err)
+						isEmailToBeSentUsingSendGrid = false
+					}
+
+					if res == 202 {
+						email.Status = m.SENT
+					}
+				}
+
+				// Send email using Amazon SES if Send Grid has failed to deliver
+				if !isEmailToBeSentUsingSendGrid {
+					awsRes, awsErr := SendEmailUsingAmazonSES(email)
+					if awsErr != nil {
+						email.Status = m.FAILED
+
+					} else if awsRes != nil {
+						email.Status = m.SENT
+					}
+				}
+				emails[i] = email
+			}
 		}
 
 	}
@@ -138,5 +165,5 @@ func verifyTime(email m.Email) bool {
 
 	emailTime, _ := time.Parse(layout, email.ScheduledTime)
 
-	return emailTime.Before(time.Now().UTC())
+	return emailTime.Before(time.Now().UTC()) && email.Status == m.SCHEDULED
 }
